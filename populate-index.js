@@ -74,13 +74,11 @@ createIndex(index)
   .then(() => { return getFilenames(dirPath); })
   .then((fileNames) => {
     Promise.map(fileNames, (fileName) => {
-      return readJsonFile(dirPath, fileName)
-    }, {concurrency :1}).then((jsonFiles) => {
-      Promise.map(jsonFiles, (jsonFile) => {
+      return readJsonFile(dirPath, fileName).then((jsonFile) => {
         return Promise.map(jsonFile.data, (document) => {
           return indexDocument(documentPrefix, document.id, document).catch(console.error); 
         }, {concurrency: 1});
-      }, {concurrency :1})
-    })
-})
+      })
+    }, {concurrency :1})
+  })
 .catch(console.error);
