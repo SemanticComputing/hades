@@ -8,7 +8,7 @@ const dirPath = process.argv[2] ? process.argv[2] : './data/';
 const index = 'http://localhost:9200/ylenews';
 const documentPrefix = 'http://localhost:9200/ylenews/article/';
 
-var indexProps = {
+const indexProps = {
     "settings" : {
         "analysis" : {
             "analyzer" : {
@@ -61,6 +61,7 @@ const readJsonFile = (dirPath, fileName) => {
 
 const indexDocument = (documentPrefix, id, data) => {
   return new Promise((resolve, reject) => {
+    console.log('Indexing ' + id);
     request.put(documentPrefix + id)
       .send(data)
       .end((err, res) => {
@@ -70,15 +71,19 @@ const indexDocument = (documentPrefix, id, data) => {
   });
 }
 
-createIndex(index)
+createIndex(index, indexProps)
   .then(() => { return getFilenames(dirPath); })
   .then((fileNames) => {
     Promise.map(fileNames, (fileName) => {
       return readJsonFile(dirPath, fileName).then((jsonFile) => {
         return Promise.map(jsonFile.data, (document) => {
-          return indexDocument(documentPrefix, document.id, document).catch(console.error); 
-        }, {concurrency: 1});
+          return indexDocument(documentPrefix, document.id, document)
+            .catch((err) => { 
+               console.log('Failed indexing ' + document.id); 
+               console.error(err);
+             })
+        }, {concurrency: 5});
       })
-    }, {concurrency :1})
+    }, {concurrency :5})
   })
 .catch(console.error);
