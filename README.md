@@ -10,7 +10,7 @@ Create news reader text index using Elasticsearch with Voikko plugin (support fo
 - Increase your system mmap count setting by running:
 
 ```bash
-sysctl -w vm.max_map_count=262144
+sudo sysctl -w vm.max_map_count=262144
 ```
 
 See https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html for more information.
@@ -24,7 +24,9 @@ docker build -t news-reader-index  ./
 ## Run
 
 ```bash
-docker run --rm -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -it news-reader-index:latest
+mkdir esdata
+chmod 777 esdata
+docker run -v $(pwd)/esdata:/usr/share/elasticsearch/data --rm -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -it news-reader-index:latest
 ```
 ## Load data to index
 
@@ -32,5 +34,6 @@ Populate elasticsearch index with news data:
 
 ```bash
 npm install
-node populate-index.js <PATH_TO_DATA_DIR>
+node populate-index.js <PATH_TO_DIRECTORY_CONTAINING_THE_SOURCE_DATA>
 ```
+

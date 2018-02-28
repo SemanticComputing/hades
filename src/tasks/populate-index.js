@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const request = require('superagent');
 const path = require('path');
 
-const dirPath = process.argv[2] ? process.argv[2] : './data/';
+const dirPath = process.argv[2] ? process.argv[2] : './yledata/';
 const index = 'http://localhost:9200/ylenews';
 const documentPrefix = 'http://localhost:9200/ylenews/article/';
 
