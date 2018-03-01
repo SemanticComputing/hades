@@ -1,6 +1,6 @@
 FROM openjdk:8-jre
 
-RUN apt-get update 
+RUN apt-get update
 RUN apt-get install -y wget
 RUN wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.deb
 RUN dpkg -i elasticsearch-5.1.1.deb
@@ -10,8 +10,8 @@ RUN apt-get install -y libvoikko1
 
 # Add dictionary
 RUN mkdir -p /usr/lib/voikko
-WORKDIR /usr/lib/voikko 
-RUN wget http://www.puimula.org/htp/testing/voikko-snapshot-v5/dict-morpho.zip 
+WORKDIR /usr/lib/voikko
+RUN wget http://www.puimula.org/htp/testing/voikko-snapshot-v5/dict-morpho.zip
 RUN unzip dict-morpho.zip
 
 # Install elasticsearch plugin

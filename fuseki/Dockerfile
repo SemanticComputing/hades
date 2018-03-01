@@ -1,13 +1,13 @@
-FROM secoresearch/fuseki 
+FROM secoresearch/fuseki
 
 ENV TMPDIR /tmp/data
-COPY --chown=9008:9008 ./data $TMPDIR 
+COPY --chown=9008:9008 * $TMPDIR
 
 # Load entities.nt and enrichments.ttl
-RUN mkdir -p $FUSEKI_BASE/databases/tdb $FUSEKI_BASE/databases/lucene 
+RUN mkdir -p $FUSEKI_BASE/databases/tdb $FUSEKI_BASE/databases/lucene
 ENV ASSEMBLER $FUSEKI_BASE/configuration/assembler.ttl
 ENV JAVA_CMD java -cp "$FUSEKI_HOME/fuseki-server.jar:/javalibs/*"
-ENV TDBLOADER $JAVA_CMD tdb.tdbloader --desc=$ASSEMBLER 
+ENV TDBLOADER $JAVA_CMD tdb.tdbloader --desc=$ASSEMBLER
 
 RUN $TDBLOADER --graph=http://ldf.fi/newsreader/entities/ $TMPDIR/entities.nt  \
     && $TDBLOADER --graph=http://ldf.fi/newsreader/enrichments/ $TMPDIR/enrichments.ttl  \

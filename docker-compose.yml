@@ -1,0 +1,26 @@
+version: '3.5'
+services:
+    elastic:
+        build:
+            context: ./elastic
+        ports:
+            - 9200:9200
+            - 9300:9300
+        volumes:
+            - ./esdata:/usr/share/elasticsearch/data
+        restart: unless-stopped
+    fuseki:
+        build:
+            context: ./fuseki
+        ports:
+            - 3030:3030
+        restart: unless-stopped
+    api:
+        build:
+            context: ./node
+        environment:
+            - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/sparql
+            - NEWS_READER_TEXT_INDEX_SEARCH=http://elastic:9200/ylenews/_search
+        ports:
+            - 8080:8080
+        restart: unless-stopped
