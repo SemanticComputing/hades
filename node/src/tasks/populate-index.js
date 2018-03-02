@@ -1,12 +1,15 @@
-const _ = require('lodash');
+/* eslint-env node */
+/* eslint-disable no-console */
+
 const fs = require('fs');
 const Promise = require('bluebird');
 const request = require('superagent');
 const path = require('path');
+const config = require('../config');
 
-const dirPath = process.argv[2] ? process.argv[2] : './yledata/';
-const index = 'http://localhost:9200/ylenews';
-const documentPrefix = 'http://localhost:9200/ylenews/article/';
+const dirPath = process.argv[2] || config.newsDataDir;
+const index = config.textIndex;
+const documentPrefix = `${index}/article/`;
 
 const indexProps = {
     "settings" : {
@@ -61,7 +64,7 @@ const readJsonFile = (dirPath, fileName) => {
 
 const indexDocument = (documentPrefix, id, data) => {
   return new Promise((resolve, reject) => {
-    console.log('Indexing ' + id);
+    console.log(`Indexing ${id}`);
     request.put(documentPrefix + id)
       .send(data)
       .end((err, res) => {
@@ -78,12 +81,12 @@ createIndex(index, indexProps)
       return readJsonFile(dirPath, fileName).then((jsonFile) => {
         return Promise.map(jsonFile.data, (document) => {
           return indexDocument(documentPrefix, document.id, document)
-            .catch((err) => { 
-               console.log('Failed indexing ' + document.id); 
+            .catch((err) => {
+               console.log(`Failed indexing ${document.id}`);
                console.error(err);
              })
-        }, {concurrency: 5});
+        }, { concurrency: 5 });
       })
-    }, {concurrency :5})
+    }, { concurrency: 5 })
   })
 .catch(console.error);

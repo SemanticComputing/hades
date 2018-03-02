@@ -6,6 +6,4 @@ WORKDIR /app/
 
 RUN npm install
 
-RUN ls -l
-
 CMD ["pm2-runtime", "api/index.js"]

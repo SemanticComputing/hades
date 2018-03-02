@@ -24,3 +24,14 @@ services:
         ports:
             - 8080:8080
         restart: unless-stopped
+    tasks:
+        build:
+            context: ./node
+            dockerfile: Dockerfile.tasks
+        environment:
+            - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/sparql
+            - NEWS_READER_TEXT_INDEX=http://elastic:9200/ylenews
+            - NODE_OPTIONS=--max-old-space-size=4096
+        volumes:
+            - ./yledata/:/app/yledata
+            - ./fuseki/data/:/app/data

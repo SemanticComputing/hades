@@ -17,7 +17,7 @@ class SparqlApi {
   query(query, { headers }) {
     return new Promise((resolve, reject) => {
       request.post(this.endpoint)
-        .send({ query: query })
+        .send({ query })
         .set(headers)
         .end((err, res) => {
           if (err || !res.ok) return reject(err);
