@@ -48,12 +48,12 @@ const getWikidataTriples = (uris) => {
 
     const sparqlQuery = `
       CONSTRUCT { ?s rdfs:label ?o . ?entity ?p1 ?s . ?entity skos:related ?s . } WHERE {
-          VALUES ?entity {
-            ${urisStr}
-          }
-          ?entity ?p1 ?s .
-          ?s rdfs:label|skos:prefLabel ?o .
-          FILTER (LANG(?o) = 'fi')
+        VALUES ?entity {
+          ${urisStr}
+        }
+        ?entity ?p1 ?s .
+        ?s rdfs:label|skos:prefLabel ?o .
+        FILTER (LANG(?o) = 'fi')
       }
     `;
 
@@ -75,4 +75,3 @@ getUris().then(getWikidataTriples)
             console.log('wrote file ./wikidata-enrichments.ttl');
         });
     });
-

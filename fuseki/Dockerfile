@@ -1,20 +1,10 @@
 FROM secoresearch/fuseki
 
-ENV TMPDIR /tmp/data
-COPY --chown=9008:9008 * $TMPDIR/
+COPY --chown=9008:9008 * $FUSEKI_HOME/
 
-# Load entities.nt and enrichments.ttl
-RUN mkdir -p $FUSEKI_BASE/databases/tdb $FUSEKI_BASE/databases/lucene
+RUN chmod +x $FUSEKI_HOME/load_subjects.sh $FUSEKI_HOME/load_enrichments.sh $FUSEKI_HOME/tdbloader
+
 ENV ASSEMBLER $FUSEKI_BASE/configuration/assembler.ttl
-ENV JAVA_CMD java -cp "$FUSEKI_HOME/fuseki-server.jar:/javalibs/*"
-ENV TDBLOADER $JAVA_CMD tdb.tdbloader --desc=$ASSEMBLER
-
-RUN ls -l /tmp/
-
-RUN $TDBLOADER --graph=http://ldf.fi/newsreader/entities/ $TMPDIR/subjects.nt  \
-    && $TDBLOADER --graph=http://ldf.fi/newsreader/enrichments/ $TMPDIR/enrichments.ttl  \
-    && $JAVA_CMD jena.textindexer --desc=$ASSEMBLER \
-    && rm -rf $TMPDIR
 
 EXPOSE 3030
 

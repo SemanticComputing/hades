@@ -43,18 +43,28 @@ docker-compose run tasks populate-index.js
 
 ### Generate RDF
 
+Create a directory for the Fuseki databse:
+
+```bash
+mkdir fuseki-db
+chmod 777 fuseki-db
+```
+
+Create RDF for the subjects in the news, and load them into the database:
+
 ```bash
 docker-compose run tasks parse-entities.js
-docker-compose run tasks enrich-entities.js
+docker-compose run fuseki ./load_subjects.sh
 ```
 
-### Build the Fuseki database
+Enrich the subjects:
 
 ```bash
-docker-compose build fuseki
+docker-compose up -d fuseki
+docker-compose run tasks enrich-entities.js
+docker-compose down
+docker-compose run fuseki ./load_enrichments.sh
 ```
-
-Docker Compose builds the instance at `up`, so this step can also be skipped.
 
 ## Run
 

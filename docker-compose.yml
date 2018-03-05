@@ -14,7 +14,9 @@ services:
             context: ./fuseki
         ports:
             - 3030:3030
-        restart: unless-stopped
+        volumes:
+            - ./data/:/staging
+            - ./fuseki-db/:/fuseki-base/databases
     api:
         build:
             context: ./node

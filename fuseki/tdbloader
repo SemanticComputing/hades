@@ -1,0 +1,5 @@
+#!/bin/bash
+java_cmd="java -cp $FUSEKI_HOME/fuseki-server.jar:/javalibs/*"
+$java_cmd tdb.tdbloader --desc=$ASSEMBLER $* \
+  && $java_cmd jena.textindexer --desc=$ASSEMBLER
+
