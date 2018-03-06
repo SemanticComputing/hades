@@ -9,7 +9,7 @@ const config = require('../config');
 
 const entityEndpoint = config.sparqlEndpoint;
 const { wikidataEndpoint } = config;
-const filePath = `${process.argv[2] || config.rdfDataDir}/wikidata-enrichments.ttl`;
+const filePath = `${process.argv[2] || config.rdfDataDir}/enrichments.ttl`;
 
 const getUris = () => {
   return new Promise((resolve, reject) => {
