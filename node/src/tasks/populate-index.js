@@ -4,8 +4,10 @@
 const fs = require('fs');
 const Promise = require('bluebird');
 const request = require('superagent');
+const _ = require('lodash');
 const path = require('path');
 const config = require('../config');
+const ProgressBar = require('progress');
 
 const dirPath = process.argv[2] || config.newsDataDir;
 const index = config.textIndex;
@@ -64,7 +66,6 @@ const readJsonFile = (dirPath, fileName) => {
 
 const indexDocument = (documentPrefix, id, data) => {
   return new Promise((resolve, reject) => {
-    console.log(`Indexing ${id}`);
     request.put(documentPrefix + id)
       .send(data)
       .end((err, res) => {
@@ -74,19 +75,36 @@ const indexDocument = (documentPrefix, id, data) => {
   });
 }
 
-createIndex(index, indexProps)
-  .then(() => { return getFilenames(dirPath); })
-  .then((fileNames) => {
-    Promise.map(fileNames, (fileName) => {
-      return readJsonFile(dirPath, fileName).then((jsonFile) => {
-        return Promise.map(jsonFile.data, (document) => {
-          return indexDocument(documentPrefix, document.id, document)
-            .catch((err) => {
-               console.log(`Failed indexing ${document.id}`);
-               console.error(err);
-             })
-        }, { concurrency: 5 });
-      })
-    }, { concurrency: 5 })
-  })
-.catch(console.error);
+const indexAll = () => {
+  let bar; // eslint-disable-line init-declarations
+
+  createIndex(index, indexProps)
+    .then(() => getFilenames(dirPath))
+    .then((fileNames) => {
+      bar = new ProgressBar('[:bar] :current/:total :percent ETA: :eta Elapsed: :elapsed', { total: fileNames.length });
+      return fileNames;
+    })
+    .then((fileNames) => Promise.map(
+      fileNames, (fileName) => readJsonFile(dirPath, fileName)
+      .then((jsonFile) => Promise.map(jsonFile.data, (document) => indexDocument(documentPrefix, document.id, document)
+        .then(() => true)
+        .catch((err) => {
+          bar.interrupt(`Failed to index ${document.id} (${err.status})`);
+          return false;
+        }), { concurrency: 8 })
+        .then((res) => {
+          bar.tick();
+          return res;
+        })),
+      { concurrency: 2 }
+    ))
+    .then((res) => {
+      const flattenedRes = _.flatten(res);
+      const successCount = _.compact(flattenedRes).length;
+
+      console.log(`${successCount}/${flattenedRes.length} documents succesfully indexed.`)
+    })
+    .catch(console.error);
+};
+
+indexAll();

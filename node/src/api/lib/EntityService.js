@@ -1,5 +1,4 @@
 const Promise = require('bluebird');
-const request = require( 'superagent');
 const _ = require('lodash');
 const config = require('../../config'); 
 const endpoint = config.sparqlEndpoint;

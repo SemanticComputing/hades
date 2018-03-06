@@ -21,7 +21,7 @@ services:
         build:
             context: ./node
         environment:
-            - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/sparql
+            - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/ds/sparql
             - NEWS_READER_TEXT_INDEX_SEARCH=http://elastic:9200/ylenews/_search
         ports:
             - 8080:8080
@@ -31,7 +31,7 @@ services:
             context: ./node
             dockerfile: Dockerfile.tasks
         environment:
-            - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/sparql
+            - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/ds/sparql
             - NEWS_READER_TEXT_INDEX=http://elastic:9200/ylenews
             - NODE_OPTIONS=--max-old-space-size=4096
         volumes:
