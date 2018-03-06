@@ -4,8 +4,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
 const extractLess = new ExtractTextPlugin({
-    filename: "[name].[contenthash].css",
-    disable: process.env.NODE_ENV !== "production"
+  filename: '[name].[contenthash].css',
+  disable: process.env.NODE_ENV !== 'production'
+});
+
+const config = new webpack.DefinePlugin({
+  'API_URL': JSON.stringify(process.env.NODE_ENV === 'production' ? 'api/v1' : 'http://localhost:8080/api/v1')
 });
 
 module.exports = {
@@ -24,14 +28,13 @@ module.exports = {
       {
         test: /\.less$/,
         use: extractLess.extract({
-            use: [{
-                loader: "css-loader"
-            }, {
-                loader: "less-loader"
-            }],
-            // use style-loader in development
-            fallback: "style-loader"
-          }),
+          use: [
+            { loader: 'css-loader' },
+            { loader: 'less-loader' }
+          ],
+          // use style-loader in development
+          fallback: 'style-loader'
+        }),
         exclude: /node_modules/
       },
     ]
@@ -42,6 +45,7 @@ module.exports = {
     }),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    extractLess
+    extractLess,
+    config
   ]
 };

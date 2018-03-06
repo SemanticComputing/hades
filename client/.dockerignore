@@ -1,0 +1,6 @@
+Dockerfile
+README*
+node_modules
+build
+.git*
+*.swp
