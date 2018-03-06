@@ -38,7 +38,7 @@ docker-compose up -d elastic
 Once the instance is running, run the indexing script (this will take a long while, and you need lots of RAM, if you're indexing the whole dataset):
 
 ```bash
-docker-compose run tasks populate-index.js
+docker-compose run --rm tasks populate-index.js
 ```
 
 ### Generate RDF
@@ -53,8 +53,8 @@ chmod 777 fuseki-db data
 Create RDF for the subjects in the news, and load them into the database:
 
 ```bash
-docker-compose run tasks parse-entities.js
-docker-compose run fuseki ./load_subjects.sh
+docker-compose run --rm tasks parse-entities.js
+docker-compose run --rm fuseki ./load_subjects.sh
 ```
 
 Enrich the subjects:
@@ -62,12 +62,12 @@ Enrich the subjects:
 ```bash
 docker-compose up -d fuseki
 docker-compose run tasks enrich-entities.js
-docker-compose down
-docker-compose run fuseki ./load_enrichments.sh
+docker-compose stop fuseki
+docker-compose run --rm fuseki ./load_enrichments.sh
 ```
 
 ## Run
 
 ```bash
-docker-compose up fuseki elastic api
+docker-compose up -d fuseki elastic api client
 ```
