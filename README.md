@@ -43,11 +43,11 @@ docker-compose run tasks populate-index.js
 
 ### Generate RDF
 
-Create a directory for the Fuseki databse:
+Create a directory for the Fuseki databse, and for the rdf files:
 
 ```bash
-mkdir fuseki-db
-chmod 777 fuseki-db
+mkdir fuseki-db data
+chmod 777 fuseki-db data
 ```
 
 Create RDF for the subjects in the news, and load them into the database:

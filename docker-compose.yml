@@ -41,4 +41,4 @@ services:
             - NODE_OPTIONS=--max-old-space-size=4096
         volumes:
             - ./yledata/:/app/yledata
-            - ./fuseki/data/:/app/data
+            - ./data/:/app/data
