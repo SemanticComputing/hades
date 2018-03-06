@@ -9,7 +9,7 @@ const config = require('../config');
 
 const entityEndpoint = config.sparqlEndpoint;
 const { wikidataEndpoint } = config;
-const filePath = process.argv[2] || './wikidata-enrichments.nt'
+const filePath = `${process.argv[2] || config.rdfDataDir}/wikidata-enrichments.ttl`;
 
 const getUris = () => {
   return new Promise((resolve, reject) => {
@@ -72,6 +72,6 @@ const getWikidataTriples = (uris) => {
 getUris().then(getWikidataTriples)
     .then((triples) => {
         fs.writeFile(filePath, triples, () => {
-            console.log('wrote file ./wikidata-enrichments.ttl');
+            console.log(`wrote file ${filePath}`);
         });
     });
