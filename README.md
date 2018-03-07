@@ -1,6 +1,6 @@
-# News reader text index
+# Hades
 
-Create news reader text index using Elasticsearch with Voikko plugin (support for Finnish language).
+News data entity search
 
 ## Requirements
 
@@ -20,14 +20,9 @@ The ElasticSearch index and Fuseki database need to be set up before the system 
 
 ### Initialize the index
 
+Create news reader text index using Elasticsearch with Voikko plugin (support for Finnish language).
+
 You will need to have the news data in `./yledata`.
-
-Create a directory for the index:
-
-```bash
-mkdir esdata
-chmod 777 esdata
-```
 
 Start the ElasticSearch instance:
 
@@ -43,11 +38,11 @@ docker-compose run --rm tasks populate-index.js
 
 ### Generate RDF
 
-Create a directory for the Fuseki databse, and for the rdf files:
+Create a directory for the rdf files:
 
 ```bash
-mkdir fuseki-db data
-chmod 777 fuseki-db data
+mkdir data
+chmod 777 data
 ```
 
 Create RDF for the subjects in the news, and load them into the database:
@@ -61,7 +56,7 @@ Enrich the subjects:
 
 ```bash
 docker-compose up -d fuseki
-docker-compose run tasks enrich-entities.js
+docker-compose run --rm tasks enrich-entities.js
 docker-compose stop fuseki
 docker-compose run --rm fuseki ./load_enrichments.sh
 ```

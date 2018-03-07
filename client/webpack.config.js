@@ -9,7 +9,7 @@ const extractLess = new ExtractTextPlugin({
 });
 
 const config = new webpack.DefinePlugin({
-  'API_URL': JSON.stringify(process.env.NODE_ENV === 'production' ? 'api/v1' : 'http://localhost:8080/api/v1')
+  'API_URL': JSON.stringify(process.env.NODE_ENV === 'production' ? 'api/v1' : 'http://localhost:3003/api/v1')
 });
 
 module.exports = {

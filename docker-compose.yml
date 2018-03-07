@@ -3,20 +3,15 @@ services:
     elastic:
         build:
             context: ./elastic
-        ports:
-            - 9200:9200
-            - 9300:9300
         volumes:
-            - ./esdata:/usr/share/elasticsearch/data
+            - esdata:/usr/share/elasticsearch/data,rw
         restart: unless-stopped
     fuseki:
         build:
             context: ./fuseki
-        ports:
-            - 3030:3030
         volumes:
             - ./data/:/staging
-            - ./fuseki-db/:/fuseki-base/databases
+            - fuseki-db:/fuseki-base/databases
     api:
         build:
             context: ./node
@@ -24,13 +19,13 @@ services:
             - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/ds/sparql
             - NEWS_READER_TEXT_INDEX_SEARCH=http://elastic:9200/ylenews/_search
         ports:
-            - 8080:8080
+            - 3003:8080
         restart: unless-stopped
     client:
         build:
             context: ./client
         ports:
-            - 3000:3000
+            - 5002:3000
     tasks:
         build:
             context: ./node
@@ -42,3 +37,6 @@ services:
         volumes:
             - ./yledata/:/app/yledata
             - ./data/:/app/data
+volumes:
+    fuseki-db:
+    esdata:
