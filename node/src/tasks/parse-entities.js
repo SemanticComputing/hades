@@ -61,7 +61,9 @@ const parseEntities = (documentPrefix, id, data) => {
 
       rdf += `${docUri} ${subject} <${uri}> .\n` +
         `<${uri}> ${rdfType} ${type} .\n`;
-      if (s.title.fi) rdf += `<${uri}> ${rdfsLabel} "${s.title.fi}"@fi .\n`;
+      if (s.title.fi) {
+        rdf += `<${uri}> ${rdfsLabel} "${s.title.fi.replace(/"/g, '\\"')}"@fi .\n`;
+      }
     }
   }
 
