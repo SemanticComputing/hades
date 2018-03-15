@@ -60,8 +60,8 @@ const parseEntities = (documentPrefix, id, data) => {
       else if (_.includes(s.types, "Organization")) type = organization;
 
       rdf += `${docUri} ${subject} <${uri}> .\n` +
-        `<${uri}> ${rdfType} ${type} .\n` +
-        `<${uri}> ${rdfsLabel} "${s.title.fi}"@fi .\n`;
+        `<${uri}> ${rdfType} ${type} .\n`;
+      if (s.title.fi) rdf += `<${uri}> ${rdfsLabel} "${s.title.fi}"@fi .\n`;
     }
   }
 
