@@ -5,6 +5,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const Promise = require('bluebird');
 const path = require('path');
+const ProgressBar = require('progress');
 const config = require('../config');
 
 const dirPath = process.argv[2] || config.newsDataDir;
@@ -22,7 +23,7 @@ const wikidataUri = 'http://www.wikidata.org/entity/';
 
 const getFilenames = (dirPath) => {
   return new Promise((resolve, reject) => {
-    fs.readdir(dirPath, function(err, fileNames) {
+    fs.readdir(dirPath, (err, fileNames) => {
       if (err) {
         return reject(err);
       }
@@ -33,7 +34,7 @@ const getFilenames = (dirPath) => {
 
 const readJsonFile = (dirPath, fileName) => {
   return new Promise((resolve, reject) => {
-    fs.readFile(path.join(dirPath, fileName), 'utf-8', function(err, content) {
+    fs.readFile(path.join(dirPath, fileName), 'utf-8', (err, content) => {
       if (err) {
         return reject(err);
       }
@@ -68,22 +69,48 @@ const parseEntities = (documentPrefix, id, data) => {
 
 }
 
-getFilenames(dirPath)
-  .then((fileNames) => {
-    return Promise.map(fileNames, (fileName) => readJsonFile(dirPath, fileName)
-      .then((jsonFile) => {
-        return _.compact(_.map(jsonFile.data, (document) => parseEntities(documentPrefix, document.id, document)))
-      }));
-  }, { concurrency: 2 })
-  .then((data) => {
-    const rdf = _.flatten(data).join('');
+const writeToStream = (stream, content) => {
+  return new Promise((resolve) => {
+    if (!content) return resolve(true);
 
-    fs.writeFile(`${outPutDir}/subjects.nt`, rdf, (err) => {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("The file was saved!");
-      return true;
-    });
-  })
-  .catch(console.error);
+    if (stream.write(content)) {
+      return process.nextTick(() => resolve(true));
+    }
+    return stream.once('drain', () => resolve(true));
+  });
+}
+
+const constructAll = () => {
+  const outputStream = fs.createWriteStream(`${outPutDir}/subjects.nt`, {
+    flags: 'a',
+    highWaterMark: 10485760
+  });
+
+  outputStream.on('error', (err) => {
+    throw err;
+  });
+
+  let bar; // eslint-disable-line init-declarations
+
+  getFilenames(dirPath)
+    .then((fileNames) => {
+      bar = new ProgressBar('[:bar] :current/:total :percent ETA: :eta Elapsed: :elapsed', { total: fileNames.length });
+      return fileNames;
+    })
+    .then((fileNames) => {
+      return Promise.map(fileNames, (fileName) => readJsonFile(dirPath, fileName)
+        .then((jsonFile) => {
+          return Promise.all(_.map(jsonFile.data, (document) => {
+            return writeToStream(outputStream, parseEntities(documentPrefix, document.id, document));
+          }));
+        })
+        .then(() => bar.tick()), { concurrency: 2 });
+    })
+    .then(() => {
+      outputStream.end();
+      console.log("Done!");
+    })
+    .catch(console.error);
+}
+
+constructAll();
