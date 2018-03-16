@@ -33,6 +33,7 @@ services:
         environment:
             - NEWS_READER_SPARQL_ENDPOINT=http://fuseki:3030/ds/sparql
             - NEWS_READER_TEXT_INDEX=http://elastic:9200/ylenews
+            - WIKIDATA_URI_CHUNK_SIZE=100
             - NODE_OPTIONS=--max-old-space-size=4096
         volumes:
             - ./yledata/:/app/yledata
