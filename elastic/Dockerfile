@@ -42,7 +42,8 @@ RUN wget https://github.com/hfst/hfst-ospell/releases/download/v$HFSTO_VERSION/h
     && unzip dict-morpho.zip \
     && elasticsearch-plugin install https://github.com/EvidentSolutions/elasticsearch-analysis-voikko/releases/download/v0.5.0/elasticsearch-analysis-voikko-0.5.0.zip \
     && mv /tmp/.java.policy /usr/share/elasticsearch/ \
-    && chown -R elasticsearch:elasticsearch /usr/share/elasticsearch
+    && chown -R elasticsearch:elasticsearch /usr/share/elasticsearch \
+    && rm -rf /tmp/*
 
 ENV ES_JAVA_OPTS -Djava.security.policy=file:/usr/share/elasticsearch/.java-policy
 USER elasticsearch
