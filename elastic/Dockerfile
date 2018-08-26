@@ -18,7 +18,7 @@ RUN unzip dict-morpho.zip
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install https://github.com/EvidentSolutions/elasticsearch-analysis-voikko/releases/download/v0.5.0/elasticsearch-analysis-voikko-0.5.0.zip
 COPY --chown=elasticsearch:elasticsearch .java.policy /home/elasticsearch/
 
-RUN mkdir -p /usr/share/elasticsearch/logs /usr/share/elasticsearch/config/scripts
+RUN mkdir -p /usr/share/elasticsearch/logs /usr/share/elasticsearch/config/scripts /usr/share/elasticsearch/data
 COPY elasticsearch.yml /usr/share/elasticsearch/config/
 RUN cp /etc/elasticsearch/log4j2.properties /usr/share/elasticsearch/config
 RUN chown -R elasticsearch:elasticsearch /usr/share/elasticsearch
