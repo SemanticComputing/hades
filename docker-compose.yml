@@ -4,8 +4,11 @@ services:
         build:
             context: ./elastic
         volumes:
-            - esdata:/usr/share/elasticsearch/data,rw
+            - esdata:/usr/share/elasticsearch/data
         restart: unless-stopped
+        ports:
+            - 9200:9200
+            - 9300:9300
     fuseki:
         build:
             context: ./fuseki
